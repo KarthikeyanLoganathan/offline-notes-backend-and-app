@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var authRepository: AuthRepository
     private lateinit var notesRepository: NotesRepository
     private lateinit var notesAdapter: NotesAdapter
-    private var currentUserId: Int = 0
+    private var currentUserId: String = ""
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

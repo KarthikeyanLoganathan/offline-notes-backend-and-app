@@ -17,8 +17,8 @@ class NoteDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityNoteDetailBinding
     private lateinit var notesRepository: NotesRepository
     private lateinit var authRepository: AuthRepository
-    private var noteId: Int? = null
-    private var currentUserId: Int = 0
+    private var noteId: String? = null
+    private var currentUserId: String = ""
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +30,7 @@ class NoteDetailActivity : AppCompatActivity() {
         notesRepository = NotesRepository(this)
         authRepository = AuthRepository(this)
         
-        noteId = intent.getIntExtra("NOTE_ID", -1).takeIf { it != -1 }
+        noteId = intent.getStringExtra("NOTE_ID")
         
         loadSession()
         loadNote()
@@ -39,7 +39,7 @@ class NoteDetailActivity : AppCompatActivity() {
     private fun loadSession() {
         lifecycleScope.launch {
             val session = authRepository.getCurrentSession()
-            currentUserId = session?.userId ?: 0
+            currentUserId = session?.userId ?: ""
         }
     }
     

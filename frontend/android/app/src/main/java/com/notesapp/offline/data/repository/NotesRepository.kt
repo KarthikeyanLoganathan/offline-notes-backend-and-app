@@ -54,7 +54,12 @@ class NotesRepository(context: Context) {
         try {
             if (networkUtils.isOnline()) {
                 // Create note on server
-                val request = CreateNoteRequest(title, content, labelIds)
+                val request = CreateNoteRequest(
+                    id = null,
+                    title = title,
+                    content = content,
+                    labelIds = labelIds
+                )
                 val response = apiService.createNote(request)
                 
                 if (response.isSuccessful && response.body() != null) {
