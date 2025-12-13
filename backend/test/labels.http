@@ -2,12 +2,21 @@
 
 @baseUrl = http://localhost:3000
 @contentType = application/json
-@authToken = your-jwt-token-here
 @labelId = 1
+
+### User Login
+# @name userLogin
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "demo.hemasri+john.doe@gmail.com",
+  "password": "Abcd1234"
+}
 
 ### Create a new label
 POST {{baseUrl}}/api/labels
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{userLogin.response.body.token}}
 Content-Type: {{contentType}}
 
 {
@@ -17,7 +26,7 @@ Content-Type: {{contentType}}
 
 ### Create another label
 POST {{baseUrl}}/api/labels
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{userLogin.response.body.token}}
 Content-Type: {{contentType}}
 
 {
@@ -27,7 +36,7 @@ Content-Type: {{contentType}}
 
 ### Create label - Shopping
 POST {{baseUrl}}/api/labels
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{userLogin.response.body.token}}
 Content-Type: {{contentType}}
 
 {
@@ -37,7 +46,7 @@ Content-Type: {{contentType}}
 
 ### Create label - Important
 POST {{baseUrl}}/api/labels
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{userLogin.response.body.token}}
 Content-Type: {{contentType}}
 
 {
@@ -47,7 +56,7 @@ Content-Type: {{contentType}}
 
 ### Create label - Ideas
 POST {{baseUrl}}/api/labels
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{userLogin.response.body.token}}
 Content-Type: {{contentType}}
 
 {
@@ -57,15 +66,15 @@ Content-Type: {{contentType}}
 
 ### Get all labels
 GET {{baseUrl}}/api/labels
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{userLogin.response.body.token}}
 
 ### Get single label
 GET {{baseUrl}}/api/labels/{{labelId}}
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{userLogin.response.body.token}}
 
 ### Update label
 PUT {{baseUrl}}/api/labels/{{labelId}}
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{userLogin.response.body.token}}
 Content-Type: {{contentType}}
 
 {
@@ -75,7 +84,7 @@ Content-Type: {{contentType}}
 
 ### Update label - name only
 PUT {{baseUrl}}/api/labels/{{labelId}}
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{userLogin.response.body.token}}
 Content-Type: {{contentType}}
 
 {
@@ -84,7 +93,7 @@ Content-Type: {{contentType}}
 
 ### Update label - color only
 PUT {{baseUrl}}/api/labels/{{labelId}}
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{userLogin.response.body.token}}
 Content-Type: {{contentType}}
 
 {
@@ -93,11 +102,11 @@ Content-Type: {{contentType}}
 
 ### Delete label
 DELETE {{baseUrl}}/api/labels/{{labelId}}
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{userLogin.response.body.token}}
 
 ### Try to create duplicate label (should fail)
 POST {{baseUrl}}/api/labels
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{userLogin.response.body.token}}
 Content-Type: {{contentType}}
 
 {
