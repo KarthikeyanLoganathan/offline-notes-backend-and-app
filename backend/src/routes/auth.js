@@ -65,7 +65,11 @@ router.get('/verify-email', async (req, res) => {
 // Login
 router.post('/login',
   [
-    body('email').isEmail().normalizeEmail(),
+    body('email').isEmail().normalizeEmail({
+      gmail_remove_subaddress: false,
+      gmail_remove_dots: false,
+      outlookdotcom_remove_subaddress: false,
+    }),
     body('password').notEmpty(),
   ],
   validateRequest,

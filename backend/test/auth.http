@@ -4,7 +4,6 @@
 @contentType = application/json
 
 ### Variables (Update these after registration/login)
-@authToken = your-jwt-token-here
 @verificationCode = your-verification-code-here
 
 ### Register new user
@@ -44,6 +43,7 @@ Content-Type: {{contentType}}
 GET {{baseUrl}}/api/auth/verify-email?code={{verificationCode}}
 
 ### Login
+# @name loginUser
 POST {{baseUrl}}/api/auth/login
 Content-Type: {{contentType}}
 
@@ -63,5 +63,5 @@ Content-Type: {{contentType}}
 
 ### Logout
 POST {{baseUrl}}/api/auth/logout
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{loginUser.response.body.$.token}}
 Content-Type: {{contentType}}
