@@ -1,0 +1,42 @@
+### User Endpoints
+
+@baseUrl = http://localhost:3000
+@contentType = application/json
+@authToken = your-jwt-token-here
+
+### Get user profile
+GET {{baseUrl}}/api/users/profile
+Authorization: Bearer {{authToken}}
+
+### Update user profile
+PUT {{baseUrl}}/api/users/profile
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "firstName": "John",
+  "lastName": "Doe Updated",
+  "address": {
+    "street": "789 New Street",
+    "city": "San Francisco",
+    "state": "CA",
+    "zipCode": "94103",
+    "country": "USA"
+  }
+}
+
+### Update profile - partial update
+PUT {{baseUrl}}/api/users/profile
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Jonathan"
+}
+
+### Get active sessions
+GET {{baseUrl}}/api/users/sessions
+Authorization: Bearer {{authToken}}
+
+### Get profile without authentication (should fail)
+GET {{baseUrl}}/api/users/profile

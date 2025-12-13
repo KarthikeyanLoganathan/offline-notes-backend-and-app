@@ -1,0 +1,99 @@
+### Notes Endpoints
+
+@baseUrl = http://localhost:3000
+@contentType = application/json
+@authToken = your-jwt-token-here
+@noteId = 1
+@labelId = 1
+
+### Create a new note
+POST {{baseUrl}}/api/notes
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Meeting Notes",
+  "content": "Discussed project requirements and timelines. Key points:\n- Q1 delivery target\n- Need 3 developers\n- Budget approved",
+  "labelIds": []
+}
+
+### Create note with labels
+POST {{baseUrl}}/api/notes
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Shopping List",
+  "content": "- Milk\n- Bread\n- Eggs\n- Coffee\n- Fruits",
+  "labelIds": [1, 2]
+}
+
+### Create note - minimal
+POST {{baseUrl}}/api/notes
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Quick Note",
+  "content": "Remember to call dentist"
+}
+
+### Get all notes (global)
+GET {{baseUrl}}/api/notes
+Authorization: Bearer {{authToken}}
+
+### Get all notes with pagination
+GET {{baseUrl}}/api/notes?limit=10&offset=0
+Authorization: Bearer {{authToken}}
+
+### Get single note
+GET {{baseUrl}}/api/notes/{{noteId}}
+Authorization: Bearer {{authToken}}
+
+### Get notes by label
+GET {{baseUrl}}/api/notes/label/{{labelId}}
+Authorization: Bearer {{authToken}}
+
+### Search notes
+GET {{baseUrl}}/api/notes/search?q=meeting
+Authorization: Bearer {{authToken}}
+
+### Search notes - multiple terms
+GET {{baseUrl}}/api/notes/search?q=project budget
+Authorization: Bearer {{authToken}}
+
+### Update note
+PUT {{baseUrl}}/api/notes/{{noteId}}
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Updated Meeting Notes",
+  "content": "Discussed project requirements and timelines. Key points:\n- Q1 delivery target\n- Need 3 developers\n- Budget approved\n- Updated: Risk assessment completed",
+  "labelIds": [1]
+}
+
+### Update note - partial
+PUT {{baseUrl}}/api/notes/{{noteId}}
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Updated Title Only"
+}
+
+### Soft delete note
+DELETE {{baseUrl}}/api/notes/{{noteId}}
+Authorization: Bearer {{authToken}}
+
+### Restore deleted note
+POST {{baseUrl}}/api/notes/{{noteId}}/restore
+Authorization: Bearer {{authToken}}
+
+### Permanently delete note
+DELETE {{baseUrl}}/api/notes/{{noteId}}/permanent
+Authorization: Bearer {{authToken}}
+
+### Get deleted notes
+GET {{baseUrl}}/api/notes?includeDeleted=true
+Authorization: Bearer {{authToken}}
