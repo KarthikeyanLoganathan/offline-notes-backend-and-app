@@ -118,7 +118,8 @@ router.get('/sync/label/:labelId', async (req, res) => {
 router.get('/sync/changes',
   [
     query('since').notEmpty().isISO8601(),
-    query('labelId').optional().isInt().toInt(),
+    // labels are UUIDs, not integers
+    query('labelId').optional().isUUID(),
   ],
   validateRequest,
   async (req, res) => {
