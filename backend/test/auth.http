@@ -42,8 +42,8 @@ Content-Type: {{contentType}}
 ### Verify email (check console logs for verification code)
 GET {{baseUrl}}/api/auth/verify-email?code={{verificationCode}}
 
-### Login
-# @name loginUser
+### User Login
+# @name userLogin
 POST {{baseUrl}}/api/auth/login
 Content-Type: {{contentType}}
 
@@ -63,5 +63,5 @@ Content-Type: {{contentType}}
 
 ### Logout
 POST {{baseUrl}}/api/auth/logout
-Authorization: Bearer {{loginUser.response.body.$.token}}
+Authorization: Bearer {{userLogin.response.body.$.token}}
 Content-Type: {{contentType}}

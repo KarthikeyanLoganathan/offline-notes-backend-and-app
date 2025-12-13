@@ -2,15 +2,24 @@
 
 @baseUrl = http://localhost:3000
 @contentType = application/json
-@authToken = your-jwt-token-here
+
+### User Login
+# @name userLogin
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "demo.hemasri+john.doe@gmail.com",
+  "password": "Abcd1234"
+}
 
 ### Get user profile
 GET {{baseUrl}}/api/users/profile
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{userLogin.response.body.$.token}}
 
 ### Update user profile
 PUT {{baseUrl}}/api/users/profile
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{userLogin.response.body.$.token}}
 Content-Type: {{contentType}}
 
 {
@@ -27,7 +36,7 @@ Content-Type: {{contentType}}
 
 ### Update profile - partial update
 PUT {{baseUrl}}/api/users/profile
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{userLogin.response.body.$.token}}
 Content-Type: {{contentType}}
 
 {
@@ -36,7 +45,7 @@ Content-Type: {{contentType}}
 
 ### Get active sessions
 GET {{baseUrl}}/api/users/sessions
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{userLogin.response.body.$.token}}
 
 ### Get profile without authentication (should fail)
 GET {{baseUrl}}/api/users/profile
