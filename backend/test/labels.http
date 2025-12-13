@@ -2,7 +2,7 @@
 
 @baseUrl = http://localhost:3000
 @contentType = application/json
-@labelId = 1
+@labelId = 529accea-7ca2-4997-bdd9-2076ffc79322
 
 ### User Login
 # @name userLogin

@@ -2,7 +2,6 @@
 
 @baseUrl = http://localhost:3000
 @contentType = application/json
-@noteId = 1
 @labelId = 1
 
 ### User Login
@@ -15,8 +14,14 @@ Content-Type: {{contentType}}
   "password": "Abcd1234"
 }
 
+### Get all labels
+# @name getAllLabels
+GET {{baseUrl}}/api/labels
+Authorization: Bearer {{userLogin.response.body.token}}
+
 ### Create a new note
 POST {{baseUrl}}/api/notes
+# @name createNote
 Authorization: Bearer {{userLogin.response.body.token}}
 Content-Type: {{contentType}}
 
@@ -34,7 +39,10 @@ Content-Type: {{contentType}}
 {
   "title": "Shopping List",
   "content": "- Milk\n- Bread\n- Eggs\n- Coffee\n- Fruits",
-  "labelIds": [1, 2]
+  "labelIds": [
+    "{{getAllLabels.response.body.$.0.id}}",
+    "{{getAllLabels.response.body.$.1.id}}"
+  ]
 }
 
 ### Create note - minimal
@@ -56,11 +64,11 @@ GET {{baseUrl}}/api/notes?limit=10&offset=0
 Authorization: Bearer {{userLogin.response.body.token}}
 
 ### Get single note
-GET {{baseUrl}}/api/notes/{{noteId}}
+GET {{baseUrl}}/api/notes/{{createNote.request.body.id}}
 Authorization: Bearer {{userLogin.response.body.token}}
 
 ### Get notes by label
-GET {{baseUrl}}/api/notes/label/{{labelId}}
+GET {{baseUrl}}/api/notes/label/{{getAllLabels.response.body.$.0.id}}
 Authorization: Bearer {{userLogin.response.body.token}}
 
 ### Search notes
@@ -72,18 +80,18 @@ GET {{baseUrl}}/api/notes/search?q=project budget
 Authorization: Bearer {{userLogin.response.body.token}}
 
 ### Update note
-PUT {{baseUrl}}/api/notes/{{noteId}}
+PUT {{baseUrl}}/api/notes/{{createNote.request.body.id}}
 Authorization: Bearer {{userLogin.response.body.token}}
 Content-Type: {{contentType}}
 
 {
   "title": "Updated Meeting Notes",
   "content": "Discussed project requirements and timelines. Key points:\n- Q1 delivery target\n- Need 3 developers\n- Budget approved\n- Updated: Risk assessment completed",
-  "labelIds": [1]
+  "labelIds": ["{{getAllLabels.response.body.$.0.id}}"]
 }
 
 ### Update note - partial
-PUT {{baseUrl}}/api/notes/{{noteId}}
+PUT {{baseUrl}}/api/notes/{{createNote.request.body.id}}
 Authorization: Bearer {{userLogin.response.body.token}}
 Content-Type: {{contentType}}
 
@@ -92,15 +100,15 @@ Content-Type: {{contentType}}
 }
 
 ### Soft delete note
-DELETE {{baseUrl}}/api/notes/{{noteId}}
+DELETE {{baseUrl}}/api/notes/{{createNote.request.body.id}}
 Authorization: Bearer {{userLogin.response.body.token}}
 
 ### Restore deleted note
-POST {{baseUrl}}/api/notes/{{noteId}}/restore
+POST {{baseUrl}}/api/notes/{{createNote.request.body.id}}/restore
 Authorization: Bearer {{userLogin.response.body.token}}
 
 ### Permanently delete note
-DELETE {{baseUrl}}/api/notes/{{noteId}}/permanent
+DELETE {{baseUrl}}/api/notes/{{createNote.request.body.id}}/permanent
 Authorization: Bearer {{userLogin.response.body.token}}
 
 ### Get deleted notes
