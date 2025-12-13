@@ -194,6 +194,57 @@ class UserService {
     
     return result.rows;
   }
+  
+  // Update password
+  async updatePassword(userId, currentPassword, newPassword) {
+    // Get user's current password hash
+    const userResult = await db.query(
+      'SELECT password_hash, email, first_name, last_name FROM users WHERE id = $1',
+      [userId]
+    );
+    
+    if (userResult.rows.length === 0) {
+      throw new Error('User not found');
+    }
+    
+    const user = userResult.rows[0];
+    
+    // Verify current password
+    const validPassword = await bcrypt.compare(currentPassword, user.password_hash);
+    if (!validPassword) {
+      throw new Error('Current password is incorrect');
+    }
+    
+    // Hash new password
+    const newPasswordHash = await bcrypt.hash(newPassword, 10);
+    
+    // Update password
+    await db.query(
+      'UPDATE users SET password_hash = $1 WHERE id = $2',
+      [newPasswordHash, userId]
+    );
+    
+    // Send notification email
+    await emailService.sendPasswordChangeNotification(
+      user.email,
+      `${user.first_name} ${user.last_name}`
+    );
+    
+    return { message: 'Password updated successfully' };
+  }
+  
+  // Logout all sessions except current
+  async logoutAllSessions(userId, currentToken) {
+    const result = await db.query(
+      'DELETE FROM user_sessions WHERE user_id = $1 AND session_token != $2',
+      [userId, currentToken]
+    );
+    
+    return { 
+      message: 'All other sessions logged out successfully',
+      sessionsRemoved: result.rowCount 
+    };
+  }
 }
 
 module.exports = new UserService();

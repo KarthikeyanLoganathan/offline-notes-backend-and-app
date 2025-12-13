@@ -46,6 +46,28 @@ router.put('/profile',
   }
 );
 
+// Update password
+router.put('/password',
+  [
+    body('currentPassword').notEmpty().withMessage('Current password is required'),
+    body('newPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters'),
+  ],
+  validateRequest,
+  async (req, res) => {
+    try {
+      const { currentPassword, newPassword } = req.body;
+      const result = await userService.updatePassword(req.user.id, currentPassword, newPassword);
+      res.json(result);
+    } catch (error) {
+      console.error('Update password error:', error);
+      if (error.message === 'Current password is incorrect') {
+        return res.status(400).json({ error: error.message });
+      }
+      res.status(500).json({ error: error.message });
+    }
+  }
+);
+
 // Get user sessions
 router.get('/sessions', async (req, res) => {
   try {
@@ -53,6 +75,17 @@ router.get('/sessions', async (req, res) => {
     res.json(sessions);
   } catch (error) {
     console.error('Get sessions error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Logout all sessions except current
+router.post('/sessions/logout-all', async (req, res) => {
+  try {
+    const result = await userService.logoutAllSessions(req.user.id, req.token);
+    res.json(result);
+  } catch (error) {
+    console.error('Logout all sessions error:', error);
     res.status(500).json({ error: error.message });
   }
 });

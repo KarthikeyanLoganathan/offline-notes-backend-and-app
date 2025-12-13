@@ -49,6 +49,36 @@ class EmailService {
       throw new Error('Failed to send verification email');
     }
   }
+  
+  async sendPasswordChangeNotification(email, userName) {
+    const mailOptions = {
+      from: process.env.EMAIL_FROM,
+      to: email,
+      subject: 'Password Changed - Notes App',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2>Password Changed Successfully</h2>
+          <p>Hello ${userName},</p>
+          <p>Your password has been changed successfully.</p>
+          <p style="margin: 20px 0; padding: 15px; background-color: #f5f5f5; border-left: 4px solid #4CAF50;">
+            <strong>Date:</strong> ${new Date().toLocaleString()}<br>
+          </p>
+          <p>If you didn't make this change, please contact our support team immediately.</p>
+          <p style="color: #999; font-size: 12px; margin-top: 30px;">
+            This is an automated notification. Please do not reply to this email.
+          </p>
+        </div>
+      `,
+    };
+    
+    try {
+      await this.transporter.sendMail(mailOptions);
+      console.log('Password change notification sent to:', email);
+    } catch (error) {
+      console.error('Error sending password change notification:', error);
+      // Don't throw error - password change already succeeded
+    }
+  }
 }
 
 module.exports = new EmailService();
