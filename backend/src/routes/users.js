@@ -79,10 +79,10 @@ router.get('/sessions', async (req, res) => {
   }
 });
 
-// Logout all sessions except current
+// Logout all sessions including current
 router.post('/sessions/logout-all', async (req, res) => {
   try {
-    const result = await userService.logoutAllSessions(req.user.id, req.token);
+    const result = await userService.logoutAllSessions(req.user.id);
     res.json(result);
   } catch (error) {
     console.error('Logout all sessions error:', error);

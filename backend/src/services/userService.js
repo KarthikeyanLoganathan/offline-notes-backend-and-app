@@ -233,15 +233,15 @@ class UserService {
     return { message: 'Password updated successfully' };
   }
   
-  // Logout all sessions except current
-  async logoutAllSessions(userId, currentToken) {
+  // Logout all sessions including current
+  async logoutAllSessions(userId) {
     const result = await db.query(
-      'DELETE FROM user_sessions WHERE user_id = $1 AND session_token != $2',
-      [userId, currentToken]
+      'DELETE FROM user_sessions WHERE user_id = $1',
+      [userId]
     );
     
     return { 
-      message: 'All other sessions logged out successfully',
+      message: 'All sessions logged out successfully',
       sessionsRemoved: result.rowCount 
     };
   }

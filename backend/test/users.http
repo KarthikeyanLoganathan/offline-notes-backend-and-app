@@ -49,3 +49,11 @@ Authorization: Bearer {{userLogin.response.body.$.token}}
 ### Get profile without authentication (should fail)
 # But succeeds because of session cookie
 GET {{baseUrl}}/api/users/profile
+
+### Logout
+POST {{baseUrl}}/api/auth/logout
+Authorization: Bearer {{userLogin.response.body.$.token}}
+
+### Logout All Sessions
+POST {{baseUrl}}/api/users/sessions/logout-all
+Authorization: Bearer {{userLogin.response.body.$.token}}
