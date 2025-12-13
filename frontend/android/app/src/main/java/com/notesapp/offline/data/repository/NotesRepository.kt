@@ -14,14 +14,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.UUID
 
-class NotesRepository(context: Context) {
-    private val database = NotesDatabase.getDatabase(context)
-    private val noteDao = database.noteDao()
-    private val labelDao = database.labelDao()
-    private val syncMetadataDao = database.syncMetadataDao()
-    private val sessionDao = database.userSessionDao()
+class NotesRepository(private val context: Context) {
+    private val database by lazy { NotesDatabase.getDatabase(context) }
+    private val noteDao by lazy { database.noteDao() }
+    private val labelDao by lazy { database.labelDao() }
+    private val syncMetadataDao by lazy { database.syncMetadataDao() }
+    private val sessionDao by lazy { database.userSessionDao() }
     private val apiService: ApiService = RetrofitClient.apiService
-    private val networkUtils = NetworkUtils(context)
+    private val networkUtils by lazy { NetworkUtils(context) }
     
     // Get all notes
     fun getAllNotes(userId: String): LiveData<List<NoteWithLabels>> {

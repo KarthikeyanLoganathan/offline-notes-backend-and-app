@@ -3,41 +3,12 @@ package com.notesapp.offline
 import android.app.Application
 import android.content.Context
 import androidx.work.*
-import com.notesapp.offline.data.local.NotesDatabase
-import com.notesapp.offline.util.Resource;
-import java.util.concurrent.TimeUnit
+import com.notesapp.offline.util.Resource
 
 class NotesApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        
-        // Initialize database
-        NotesDatabase.getDatabase(this)
-        
-        // Schedule periodic sync
-        setupPeriodicSync()
-    }
-    
-    private fun setupPeriodicSync() {
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
-        
-        val syncRequest = PeriodicWorkRequestBuilder<SyncWorker>(
-            15, TimeUnit.MINUTES
-        )
-            .setConstraints(constraints)
-            .setBackoffCriteria(
-                BackoffPolicy.LINEAR,
-                15, TimeUnit.MINUTES
-            )
-            .build()
-        
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-            "NotesSync",
-            ExistingPeriodicWorkPolicy.KEEP,
-            syncRequest
-        )
+        // WorkManager will be initialized lazily when first accessed
     }
 }
 

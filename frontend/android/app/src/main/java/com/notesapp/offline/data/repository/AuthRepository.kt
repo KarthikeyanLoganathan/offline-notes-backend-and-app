@@ -13,9 +13,9 @@ import com.notesapp.offline.util.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class AuthRepository(context: Context) {
-    private val database = NotesDatabase.getDatabase(context)
-    private val sessionDao = database.userSessionDao()
+class AuthRepository(private val context: Context) {
+    private val database by lazy { NotesDatabase.getDatabase(context) }
+    private val sessionDao by lazy { database.userSessionDao() }
     private val apiService: ApiService = RetrofitClient.apiService
     
     // Register user

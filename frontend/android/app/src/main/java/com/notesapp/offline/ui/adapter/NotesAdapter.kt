@@ -45,7 +45,12 @@ class NotesAdapter(
             
             // Format date
             val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
-            tvDate.text = dateFormat.format(Date(note.updatedAt))
+            val timestamp = try {
+                note.updatedAt.toLong()
+            } catch (e: NumberFormatException) {
+                System.currentTimeMillis()
+            }
+            tvDate.text = dateFormat.format(Date(timestamp))
             
             // Display labels
             if (noteWithLabels.labels.isNotEmpty()) {

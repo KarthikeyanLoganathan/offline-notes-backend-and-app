@@ -31,15 +31,24 @@ abstract class NotesDatabase : RoomDatabase() {
         
         fun getDatabase(context: Context): NotesDatabase {
             return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    NotesDatabase::class.java,
-                    "notes_database"
-                )
-                .fallbackToDestructiveMigration()
-                .build()
-                INSTANCE = instance
-                instance
+                val instance = INSTANCE
+                if (instance != null) {
+                    instance
+                } else {
+                    try {
+                        val newInstance = Room.inMemoryDatabaseBuilder(
+                            context.applicationContext,
+                            NotesDatabase::class.java
+                        )
+                        .fallbackToDestructiveMigration()
+                        .build()
+                        INSTANCE = newInstance
+                        newInstance
+                    } catch (e: Exception) {
+                        android.util.Log.e("NotesDatabase", "Failed to create database", e)
+                        throw e
+                    }
+                }
             }
         }
     }

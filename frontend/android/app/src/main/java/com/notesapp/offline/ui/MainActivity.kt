@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.work.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.notesapp.offline.R
 import com.notesapp.offline.data.repository.AuthRepository
@@ -19,6 +20,7 @@ import com.notesapp.offline.ui.auth.LoginActivity
 import com.notesapp.offline.ui.notes.NoteDetailActivity
 import com.notesapp.offline.util.Resource
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -45,6 +47,7 @@ class MainActivity : AppCompatActivity() {
                 currentUserId = session.userId
                 setupUI()
                 loadNotes()
+                setupPeriodicSync() // Initialize WorkManager after session is confirmed
             } else {
                 startActivity(Intent(this@MainActivity, LoginActivity::class.java))
                 finish()
@@ -172,6 +175,43 @@ class MainActivity : AppCompatActivity() {
             authRepository.logout()
             startActivity(Intent(this@MainActivity, LoginActivity::class.java))
             finish()
+        }
+    }
+    
+    private fun setupPeriodicSync() {
+        try {
+            // Initialize WorkManager with configuration if not already initialized
+            try {
+                WorkManager.getInstance(applicationContext)
+            } catch (e: IllegalStateException) {
+                // WorkManager not initialized, initialize it now
+                val config = Configuration.Builder()
+                    .setMinimumLoggingLevel(android.util.Log.INFO)
+                    .build()
+                WorkManager.initialize(applicationContext, config)
+            }
+            
+            val constraints = Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build()
+            
+            val syncRequest = PeriodicWorkRequestBuilder<com.notesapp.offline.SyncWorker>(
+                15, TimeUnit.MINUTES
+            )
+                .setConstraints(constraints)
+                .setBackoffCriteria(
+                    BackoffPolicy.LINEAR,
+                    15, TimeUnit.MINUTES
+                )
+                .build()
+            
+            WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
+                "NotesSync",
+                ExistingPeriodicWorkPolicy.KEEP,
+                syncRequest
+            )
+        } catch (e: Exception) {
+            android.util.Log.e("MainActivity", "Failed to setup periodic sync", e)
         }
     }
     
