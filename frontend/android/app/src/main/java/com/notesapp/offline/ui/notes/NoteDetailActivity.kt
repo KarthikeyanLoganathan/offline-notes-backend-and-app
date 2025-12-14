@@ -19,6 +19,7 @@ class NoteDetailActivity : AppCompatActivity() {
     private lateinit var authRepository: AuthRepository
     private var noteId: String? = null
     private var currentUserId: String = ""
+    private val selectedLabelIds = mutableSetOf<String>()
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +34,7 @@ class NoteDetailActivity : AppCompatActivity() {
         noteId = intent.getStringExtra("NOTE_ID")
         
         loadSession()
+        setupLabels()
         loadNote()
     }
     
@@ -46,11 +48,59 @@ class NoteDetailActivity : AppCompatActivity() {
     private fun loadNote() {
         noteId?.let { id ->
             lifecycleScope.launch {
-                // Load existing note
-                supportActionBar?.title = "Edit Note"
+                val noteWithLabels = notesRepository.getNoteById(id)
+                noteWithLabels?.let {
+                    binding.etTitle.setText(it.note.title)
+                    binding.etContent.setText(it.note.content)
+                    supportActionBar?.title = "Edit Note"
+                    
+                    // Pre-select labels
+                    it.labels.forEach { label ->
+                        selectedLabelIds.add(label.id)
+                        // Verify chips are updated in setupLabels observer
+                        updateChipSelection() 
+                    }
+                }
             }
         } ?: run {
             supportActionBar?.title = "New Note"
+        }
+    }
+    
+    private fun setupLabels() {
+        notesRepository.getAllLabels(currentUserId).observe(this) { labels ->
+            binding.chipGroupLabels.removeAllViews()
+            
+            labels.forEach { label ->
+                val chip = com.google.android.material.chip.Chip(this)
+                chip.text = label.name
+                chip.isCheckable = true
+                chip.tag = label.id
+                
+                // Set checked state if in selected ids (handles sync issue if labels load after note)
+                chip.isChecked = selectedLabelIds.contains(label.id)
+                
+                chip.setOnCheckedChangeListener { buttonView, isChecked ->
+                    val id = buttonView.tag as String
+                    if (isChecked) {
+                        selectedLabelIds.add(id)
+                    } else {
+                        selectedLabelIds.remove(id)
+                    }
+                }
+                binding.chipGroupLabels.addView(chip)
+            }
+        }
+    }
+    
+    private fun updateChipSelection() {
+        // Iterate through chips to update state if they exist
+        for (i in 0 until binding.chipGroupLabels.childCount) {
+            val chip = binding.chipGroupLabels.getChildAt(i) as? com.google.android.material.chip.Chip
+            val id = chip?.tag as? String
+            if (id != null && selectedLabelIds.contains(id)) {
+                chip.isChecked = true
+            }
         }
     }
     
@@ -93,9 +143,9 @@ class NoteDetailActivity : AppCompatActivity() {
         
         lifecycleScope.launch {
             val result = if (noteId == null) {
-                notesRepository.createNote(currentUserId, title, content, null)
+                notesRepository.createNote(currentUserId, title, content, selectedLabelIds.toList())
             } else {
-                notesRepository.updateNote(noteId!!, title, content, null)
+                notesRepository.updateNote(noteId!!, title, content, selectedLabelIds.toList())
             }
             
             when (result) {

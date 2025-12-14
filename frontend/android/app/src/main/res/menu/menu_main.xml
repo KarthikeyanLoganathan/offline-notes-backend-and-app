@@ -16,6 +16,11 @@
         app:showAsAction="ifRoom" />
     
     <item
+        android:id="@+id/action_manage_labels"
+        android:title="Manage Labels"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_logout"
         android:title="@string/logout"
         app:showAsAction="never" />

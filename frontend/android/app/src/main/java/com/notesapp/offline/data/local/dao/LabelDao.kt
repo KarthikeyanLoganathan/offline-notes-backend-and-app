@@ -27,6 +27,9 @@ interface LabelDao {
     @Delete
     suspend fun delete(label: LabelEntity)
     
+    @Query("DELETE FROM labels WHERE id = :labelId")
+    suspend fun deleteById(labelId: String)
+    
     @Query("DELETE FROM labels WHERE userId = :userId")
     suspend fun deleteAllForUser(userId: String)
     

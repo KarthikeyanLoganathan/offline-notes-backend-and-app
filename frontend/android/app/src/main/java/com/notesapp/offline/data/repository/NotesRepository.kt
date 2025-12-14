@@ -43,6 +43,16 @@ class NotesRepository(private val context: Context) {
         val searchQuery = "%$query%"
         return noteDao.searchNotes(userId, searchQuery)
     }
+
+    // Get note by ID
+    suspend fun getNoteById(noteId: String): NoteWithLabels? = withContext(Dispatchers.IO) {
+        noteDao.getNoteById(noteId)
+    }
+
+    // Get all labels
+    fun getAllLabels(userId: String): LiveData<List<LabelEntity>> {
+        return labelDao.getAllLabels(userId)
+    }
     
     // Create note
     suspend fun createNote(
@@ -208,6 +218,72 @@ class NotesRepository(private val context: Context) {
         }
     }
     
+    // Create label
+    suspend fun createLabel(userId: String, name: String, color: String = "#000000"): Resource<LabelEntity> = withContext(Dispatchers.IO) {
+        try {
+            if (networkUtils.isOnline()) {
+                val request = CreateLabelRequest(name, color)
+                val response = apiService.createLabel(request)
+                
+                if (response.isSuccessful && response.body() != null) {
+                    val label = response.body()!!
+                    val labelEntity = label.toEntity(userId)
+                    labelDao.insert(labelEntity)
+                    Resource.Success(labelEntity)
+                } else {
+                    Resource.Error("Failed to create label: ${response.message()}")
+                }
+            } else {
+                // Offline create
+                val labelEntity = LabelEntity(
+                    id = UUID.randomUUID().toString(),
+                    userId = userId,
+                    name = name,
+                    color = color,
+                    createdAt = System.currentTimeMillis().toString(),
+                    syncStatus = 1 // pending_create
+                )
+                labelDao.insert(labelEntity)
+                Resource.Success(labelEntity)
+            }
+        } catch (e: Exception) {
+            Resource.Error("Error creating label: ${e.localizedMessage}")
+        }
+    }
+    
+    // Delete label
+    suspend fun deleteLabel(labelId: String): Resource<String> = withContext(Dispatchers.IO) {
+        try {
+            if (networkUtils.isOnline()) {
+                val response = apiService.deleteLabel(labelId)
+                if (response.isSuccessful) {
+                    labelDao.deleteById(labelId)
+                    Resource.Success("Label deleted")
+                } else {
+                    Resource.Error("Failed to delete label: ${response.message()}")
+                }
+            } else {
+                // Offline delete
+                // Check if label is pending create (syncStatus=1), if so just delete it
+                val label = labelDao.getLabelById(labelId)
+                if (label != null) {
+                    if (label.syncStatus == 1) {
+                         labelDao.deleteById(labelId)
+                    } else {
+                        // Mark for deletion
+                        val deletedLabel = label.copy(syncStatus = 3) // pending_delete
+                        labelDao.update(deletedLabel)
+                    }
+                    Resource.Success("Label deleted")
+                } else {
+                    Resource.Error("Label not found")
+                }
+            }
+        } catch (e: Exception) {
+            Resource.Error("Error deleting label: ${e.localizedMessage}")
+        }
+    }
+    
     // Sync notes
     suspend fun syncNotes(userId: String): Resource<String> = withContext(Dispatchers.IO) {
         try {
@@ -242,6 +318,15 @@ class NotesRepository(private val context: Context) {
                         note.labels?.forEach { label ->
                             noteDao.insertNoteLabel(NoteLabelCrossRef(note.id, label.id))
                         }
+                    }
+                }
+                
+                // Fetch all labels
+                val labelsResponse = apiService.getLabels()
+                if (labelsResponse.isSuccessful && labelsResponse.body() != null) {
+                    val serverLabels = labelsResponse.body()!!
+                    serverLabels.forEach { label ->
+                        labelDao.insert(label.toEntity(userId))
                     }
                 }
             }

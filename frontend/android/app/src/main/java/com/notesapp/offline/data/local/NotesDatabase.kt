@@ -36,9 +36,10 @@ abstract class NotesDatabase : RoomDatabase() {
                     instance
                 } else {
                     try {
-                        val newInstance = Room.inMemoryDatabaseBuilder(
+                        val newInstance = Room.databaseBuilder(
                             context.applicationContext,
-                            NotesDatabase::class.java
+                            NotesDatabase::class.java,
+                            "notes_database"
                         )
                         .fallbackToDestructiveMigration()
                         .build()

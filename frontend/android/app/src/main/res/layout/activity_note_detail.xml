@@ -59,6 +59,19 @@
                     android:minLines="10" />
 
             </com.google.android.material.textfield.TextInputLayout>
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Labels"
+                android:textAppearance="?attr/textAppearanceSubtitle1" />
+                
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupLabels"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" />
 
         </LinearLayout>
 

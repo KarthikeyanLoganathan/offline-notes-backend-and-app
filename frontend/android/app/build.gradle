@@ -18,7 +18,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         
         // API URL configuration
-        buildConfigField "String", "API_BASE_URL", "\"http://10.0.2.2:3000/api\""
+        buildConfigField "String", "API_BASE_URL", "\"http://10.0.2.2:3000/api/\""
     }
 
     buildTypes {
@@ -32,10 +32,18 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
+    }
     
     kotlinOptions {
         jvmTarget = '17'
     }
+    
+
     
     buildFeatures {
         viewBinding true

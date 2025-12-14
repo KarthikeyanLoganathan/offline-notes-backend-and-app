@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var notesRepository: NotesRepository
     private lateinit var notesAdapter: NotesAdapter
     private var currentUserId: String = ""
+    private var currentLabelId: String? = null
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +59,8 @@ class MainActivity : AppCompatActivity() {
     private fun setupUI() {
         setSupportActionBar(binding.toolbar)
         
+        setupLabelFilter()
+        
         binding.fabAddNote.setOnClickListener {
             startActivity(Intent(this, NoteDetailActivity::class.java))
         }
@@ -80,12 +83,53 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun loadNotes() {
-        notesRepository.getAllNotes(currentUserId).observe(this) { notes ->
+        val notesLiveData = if (currentLabelId == null) {
+            notesRepository.getAllNotes(currentUserId)
+        } else {
+            notesRepository.getNotesByLabel(currentUserId, currentLabelId!!)
+        }
+        
+        notesLiveData.observe(this) { notes ->
             notesAdapter.submitList(notes)
             binding.tvEmptyState.visibility = if (notes.isEmpty()) {
                 android.view.View.VISIBLE
             } else {
                 android.view.View.GONE
+            }
+        }
+    }
+    
+    private fun setupLabelFilter() {
+        notesRepository.getAllLabels(currentUserId).observe(this) { labels ->
+            binding.chipGroupFilter.removeAllViews()
+            
+            // Add "All" chip (effectively clears filter)
+            // Actually, clearing selection in ChipGroup works too since we set selectionRequired=false
+            
+            labels.forEach { label ->
+                val chip = com.google.android.material.chip.Chip(this)
+                chip.text = label.name
+                chip.isCheckable = true
+                chip.tag = label.id
+                chip.setOnCheckedChangeListener { buttonView, isChecked ->
+                    if (isChecked) {
+                        currentLabelId = buttonView.tag as String
+                    } else {
+                        // If unchecked and it was the selected one
+                        if (currentLabelId == buttonView.tag as String) {
+                            currentLabelId = null
+                        }
+                    }
+                    loadNotes()
+                }
+                binding.chipGroupFilter.addView(chip)
+            }
+            
+            binding.chipGroupFilter.setOnCheckedStateChangeListener { group, checkedIds ->
+                if (checkedIds.isEmpty()) {
+                    currentLabelId = null
+                    loadNotes()
+                }
             }
         }
     }
@@ -151,6 +195,10 @@ class MainActivity : AppCompatActivity() {
                 syncNotes()
                 true
             }
+            R.id.action_manage_labels -> {
+                showLabelManager()
+                true
+            }
             R.id.action_logout -> {
                 showLogoutDialog()
                 true
@@ -168,6 +216,11 @@ class MainActivity : AppCompatActivity() {
             }
             .setNegativeButton("Cancel", null)
             .show()
+    }
+    
+    private fun showLabelManager() {
+        val dialog = com.notesapp.offline.ui.labels.LabelManagerDialogFragment.newInstance(currentUserId)
+        dialog.show(supportFragmentManager, "LabelManager")
     }
     
     private fun logout() {
