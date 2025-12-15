@@ -31,27 +31,43 @@ class MainActivity : AppCompatActivity() {
     private var currentLabelId: String? = null
     
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        
-        authRepository = AuthRepository(this)
-        notesRepository = NotesRepository(this)
-        
-        checkSession()
+        try {
+            android.util.Log.d("NotesDebug", "MainActivity onCreate (pre-super)")
+            super.onCreate(savedInstanceState)
+            android.util.Log.d("NotesDebug", "MainActivity onCreate (post-super)")
+            binding = ActivityMainBinding.inflate(layoutInflater)
+            setContentView(binding.root)
+            android.util.Log.d("NotesDebug", "MainActivity UI inflated")
+            
+            authRepository = AuthRepository(this)
+            notesRepository = NotesRepository(this)
+            
+            checkSession()
+        } catch (e: Throwable) {
+            android.util.Log.e("NotesDebug", "CRITICAL: Error in MainActivity onCreate", e)
+            Toast.makeText(this, "Error starting app: ${e.message}", Toast.LENGTH_LONG).show()
+        }
     }
     
     private fun checkSession() {
         lifecycleScope.launch {
-            val session = authRepository.getCurrentSession()
-            if (session != null) {
-                currentUserId = session.userId
-                setupUI()
-                loadNotes()
-                setupPeriodicSync() // Initialize WorkManager after session is confirmed
-            } else {
-                startActivity(Intent(this@MainActivity, LoginActivity::class.java))
-                finish()
+            try {
+                android.util.Log.d("NotesDebug", "Checking session...")
+                val session = authRepository.getCurrentSession()
+                if (session != null) {
+                    android.util.Log.d("NotesDebug", "Session found for user: ${session.userId}")
+                    currentUserId = session.userId
+                    setupUI()
+                    loadNotes()
+                    setupPeriodicSync() // Initialize WorkManager after session is confirmed
+                } else {
+                    android.util.Log.d("NotesDebug", "No session found, redirecting to login")
+                    startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                    finish()
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("NotesDebug", "CRITICAL: Error checking session", e)
+                Toast.makeText(this@MainActivity, "Session error: ${e.message}", Toast.LENGTH_LONG).show()
             }
         }
     }

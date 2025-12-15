@@ -36,18 +36,24 @@ abstract class NotesDatabase : RoomDatabase() {
                     instance
                 } else {
                     try {
+                        android.util.Log.d("NotesDebug", "Attempting to create database 'notes_database'")
+                        val appContext = context.applicationContext
+                        android.util.Log.d("NotesDebug", "Context package: ${appContext.packageName}")
+                        
                         val newInstance = Room.databaseBuilder(
-                            context.applicationContext,
+                            appContext,
                             NotesDatabase::class.java,
                             "notes_database"
                         )
                         .fallbackToDestructiveMigration()
                         .build()
+                        
+                        android.util.Log.d("NotesDebug", "Database builder created successfully")
                         INSTANCE = newInstance
                         newInstance
-                    } catch (e: Exception) {
-                        android.util.Log.e("NotesDatabase", "Failed to create database", e)
-                        throw e
+                    } catch (e: Throwable) {
+                        android.util.Log.e("NotesDebug", "CRITICAL: Failed to create database", e)
+                        throw RuntimeException("Database creation failed", e)
                     }
                 }
             }

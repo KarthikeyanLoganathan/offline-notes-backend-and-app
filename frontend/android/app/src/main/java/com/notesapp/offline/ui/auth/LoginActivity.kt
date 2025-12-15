@@ -62,18 +62,28 @@ class LoginActivity : AppCompatActivity() {
         val deviceInfo = "${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}"
         
         lifecycleScope.launch {
-            when (val result = authRepository.login(email, password, deviceInfo)) {
-                is Resource.Success -> {
-                    binding.progressBar.visibility = View.GONE
-                    Toast.makeText(this@LoginActivity, "Login successful!", Toast.LENGTH_SHORT).show()
-                    navigateToMain()
+            android.util.Log.d("NotesDebug", "LoginActivity: Attempting login for $email")
+            try {
+                when (val result = authRepository.login(email, password, deviceInfo)) {
+                    is Resource.Success -> {
+                        android.util.Log.d("NotesDebug", "LoginActivity: Login success")
+                        binding.progressBar.visibility = View.GONE
+                        Toast.makeText(this@LoginActivity, "Login successful!", Toast.LENGTH_SHORT).show()
+                        navigateToMain()
+                    }
+                    is Resource.Error -> {
+                        android.util.Log.e("NotesDebug", "LoginActivity: Login failed: ${result.message}")
+                        binding.progressBar.visibility = View.GONE
+                        binding.btnLogin.isEnabled = true
+                        Toast.makeText(this@LoginActivity, result.message, Toast.LENGTH_SHORT).show()
+                    }
+                    else -> {}
                 }
-                is Resource.Error -> {
-                    binding.progressBar.visibility = View.GONE
-                    binding.btnLogin.isEnabled = true
-                    Toast.makeText(this@LoginActivity, result.message, Toast.LENGTH_SHORT).show()
-                }
-                else -> {}
+            } catch (e: Throwable) {
+                android.util.Log.e("NotesDebug", "LoginActivity: CRITICAL crash during login", e)
+                binding.progressBar.visibility = View.GONE
+                binding.btnLogin.isEnabled = true
+                Toast.makeText(this@LoginActivity, "Crash: ${e.message}", Toast.LENGTH_LONG).show()
             }
         }
     }

@@ -56,11 +56,13 @@ class AuthRepository(private val context: Context) {
         deviceInfo: String
     ): Resource<LoginResponse> = withContext(Dispatchers.IO) {
         try {
+            android.util.Log.d("NotesDebug", "AuthRepository: Sending login request to API")
             val request = LoginRequest(email, password, deviceInfo)
             val response = apiService.login(request)
             
             if (response.isSuccessful && response.body() != null) {
                 val loginResponse = response.body()!!
+                android.util.Log.d("NotesDebug", "AuthRepository: API Login success. Saving session locally...")
                 
                 // Save session locally
                 val session = UserSessionEntity(
@@ -72,16 +74,26 @@ class AuthRepository(private val context: Context) {
                     deviceInfo = deviceInfo,
                     expiresAt = (System.currentTimeMillis() + (30L * 24 * 60 * 60 * 1000)).toString()
                 )
-                sessionDao.insert(session)
+                
+                try {
+                    android.util.Log.d("NotesDebug", "AuthRepository: Inserting session into DB")
+                    sessionDao.insert(session)
+                    android.util.Log.d("NotesDebug", "AuthRepository: Session inserted successfully")
+                } catch (e: Throwable) {
+                    android.util.Log.e("NotesDebug", "AuthRepository: DB Insert failed", e)
+                    throw e
+                }
                 
                 // Set auth token for API calls
                 RetrofitClient.setAuthToken(loginResponse.token)
                 
                 Resource.Success(loginResponse)
             } else {
+                android.util.Log.w("NotesDebug", "AuthRepository: API Login failed code=${response.code()}")
                 Resource.Error("Login failed: ${response.message()}")
             }
         } catch (e: Exception) {
+            android.util.Log.e("NotesDebug", "AuthRepository: Exception in login", e)
             Resource.Error("Error: ${e.localizedMessage}")
         }
     }
