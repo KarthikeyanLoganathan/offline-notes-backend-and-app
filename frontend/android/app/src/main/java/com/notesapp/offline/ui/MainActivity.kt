@@ -57,6 +57,10 @@ class MainActivity : AppCompatActivity() {
                 if (session != null) {
                     android.util.Log.d("NotesDebug", "Session found for user: ${session.userId}")
                     currentUserId = session.userId
+                    
+                    // Set auth token for API calls
+                    com.notesapp.offline.data.remote.RetrofitClient.setAuthToken(session.sessionToken)
+                    
                     setupUI()
                     loadNotes()
                     setupPeriodicSync() // Initialize WorkManager after session is confirmed
