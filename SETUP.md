@@ -47,9 +47,18 @@ curl http://localhost:3000/health
 ## Android App Setup
 
 ### 1. Prerequisites
+- Install PostgreSQL Database 
+  - `brew install postgresql` for mac
+  - `choco install postgresql` for Windows
+- Install OpenJDK 17 
+  - `brew install openjdk@17` for mac 
+  - `choco install microsoft-openjdk17` for Windows
 - Install Android Studio
+  - https://developer.android.com/studio
 - Set up Android SDK (API 24+)
+  - Mostly automatic
 - Create an emulator or connect a physical device
+  - You get *Medium Phone* by default
 
 ### 2. Configure API URL
 
@@ -61,6 +70,7 @@ buildConfigField "String", "API_BASE_URL", "\"http://10.0.2.2:3000\""
 
 **Important Notes:**
 - Use `10.0.2.2` for Android Emulator (not `localhost`)
+  - Android Emulator running in its own Virutal Machine connects to the host (laptop) using `10.0.2.2`
 - Use your computer's IP address for physical device (e.g., `192.168.1.100`)
 - Make sure backend is running before testing the app
 
