@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace 'com.notesapp.offline'
+    namespace = 'com.notesapp.offline'
     compileSdk 34
 
     defaultConfig {
@@ -46,8 +46,8 @@ android {
 
     
     buildFeatures {
-        viewBinding true
-        buildConfig true
+        viewBinding = true
+        buildConfig = true
     }
 }
 
