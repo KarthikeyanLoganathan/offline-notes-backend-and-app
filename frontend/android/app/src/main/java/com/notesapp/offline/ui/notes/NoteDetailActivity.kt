@@ -34,33 +34,39 @@ class NoteDetailActivity : AppCompatActivity() {
         
         noteId = intent.getStringExtra("NOTE_ID")
         
-        loadSession()
-        setupLabels()
-        loadNote()
-    }
-    
-    private fun loadSession() {
+        // Load session first, then setup UI
         lifecycleScope.launch {
-            val session = authRepository.getCurrentSession()
-            currentUserId = session?.userId ?: ""
+            loadSession()
+            setupLabels()
+            loadNote()
         }
     }
     
-    private fun loadNote() {
+    private suspend fun loadSession() {
+        val session = authRepository.getCurrentSession()
+        currentUserId = session?.userId ?: ""
+        if (currentUserId.isEmpty()) {
+            Toast.makeText(this, "Session error: Please login again", Toast.LENGTH_LONG).show()
+            finish()
+        }
+    }
+    
+    private suspend fun loadNote() {
         noteId?.let { id ->
-            lifecycleScope.launch {
-                val noteWithLabels = notesRepository.getNoteById(id)
-                noteWithLabels?.let {
-                    binding.etTitle.setText(it.note.title)
-                    binding.etContent.setText(it.note.content)
-                    supportActionBar?.title = "Edit Note"
-                    
-                    // Pre-select labels
-                    it.labels.forEach { label ->
-                        selectedLabelIds.add(label.id)
-                        // Verify chips are updated in setupLabels observer
-                        updateChipSelection() 
-                    }
+            val noteWithLabels = notesRepository.getNoteById(id)
+            noteWithLabels?.let {
+                binding.etTitle.setText(it.note.title)
+                binding.etContent.setText(it.note.content)
+                supportActionBar?.title = "Edit Note"
+                
+                // Pre-select labels
+                it.labels.forEach { label ->
+                    selectedLabelIds.add(label.id)
+                }
+                // Update chip selection after chips are created by observer
+                // Use post to ensure observer has fired and chips exist
+                binding.chipGroupLabels.post {
+                    updateChipSelection()
                 }
             }
         } ?: run {
@@ -85,8 +91,10 @@ class NoteDetailActivity : AppCompatActivity() {
                     val id = buttonView.tag as String
                     if (isChecked) {
                         selectedLabelIds.add(id)
+                        android.util.Log.d("NoteDetail", "Label selected: $id, total: ${selectedLabelIds.size}")
                     } else {
                         selectedLabelIds.remove(id)
+                        android.util.Log.d("NoteDetail", "Label deselected: $id, total: ${selectedLabelIds.size}")
                     }
                 }
                 binding.chipGroupLabels.addView(chip)
@@ -141,6 +149,8 @@ class NoteDetailActivity : AppCompatActivity() {
             Toast.makeText(this, "Note is empty", Toast.LENGTH_SHORT).show()
             return
         }
+        
+        android.util.Log.d("NoteDetail", "Saving note with ${selectedLabelIds.size} labels: $selectedLabelIds")
         
         lifecycleScope.launch {
             val result = if (noteId == null) {

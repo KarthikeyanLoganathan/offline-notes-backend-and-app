@@ -222,7 +222,11 @@ class NotesRepository(private val context: Context) {
     suspend fun createLabel(userId: String, name: String, color: String = "#000000"): Resource<LabelEntity> = withContext(Dispatchers.IO) {
         try {
             if (networkUtils.isOnline()) {
-                val request = CreateLabelRequest(name, color)
+                val request = CreateLabelRequest(
+                    id = null, // Let backend generate UUID
+                    name = name,
+                    color = color
+                )
                 val response = apiService.createLabel(request)
                 
                 if (response.isSuccessful && response.body() != null) {
