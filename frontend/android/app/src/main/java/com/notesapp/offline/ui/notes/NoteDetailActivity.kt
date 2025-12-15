@@ -26,6 +26,7 @@ class NoteDetailActivity : AppCompatActivity() {
         binding = ActivityNoteDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
         
+        setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         
         notesRepository = NotesRepository(this)

@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:8080',
+  // origin: process.env.FRONTEND_URL || 'http://localhost:8080',
   credentials: true
 }));
 app.use(express.json());
@@ -36,7 +36,7 @@ app.get('/health', (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
-  res.status(500).json({ 
+  res.status(500).json({
     error: 'Internal server error',
     message: process.env.NODE_ENV === 'development' ? err.message : undefined
   });
@@ -54,8 +54,14 @@ app.listen(PORT, () => {
 });
 
 function requestResponseLogger(req, res, next) {
-  // Request-side log
+  // Request-side log with origin info
+  const origin = req.headers.origin || 'no-origin';
+  const userAgent = req.headers['user-agent'] || 'no-user-agent';
+  const ip = req.ip || req.connection.remoteAddress || 'unknown-ip';
+
   console.log(`req: ${req.method} ${req.originalUrl}`);
+  console.log(`  origin: ${origin}, ip: ${ip}`);
+  console.log(`  user-agent: ${userAgent}`);
 
   // Hook into response finish event
   res.on('finish', () => {
