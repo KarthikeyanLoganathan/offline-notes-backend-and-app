@@ -20,6 +20,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+app.use(requestResponseLogger);
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -50,5 +52,19 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
+
+function requestResponseLogger(req, res, next) {
+  // Request-side log
+  console.log(`req: ${req.method} ${req.originalUrl}`);
+
+  // Hook into response finish event
+  res.on('finish', () => {
+    console.log(
+      `res: ${req.method} ${req.originalUrl} -> ${res.statusCode}`
+    );
+  });
+
+  next();
+}
 
 module.exports = app;
