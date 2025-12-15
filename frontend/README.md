@@ -212,3 +212,4 @@ The app follows offline-first principles:
 ## License
 
 MIT
+
