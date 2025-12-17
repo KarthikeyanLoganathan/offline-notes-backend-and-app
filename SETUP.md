@@ -9,8 +9,45 @@ brew install postgresql@14
 brew services start postgresql@14
 
 # Create database
+
 createdb -U postgres notes_app
 ```
+
+#### disable PostgreSQL login password request for local users
+
+edit C:\Program Files\PostgreSQL\18\data\pg_hba.conf
+
+from
+```
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+# "local" is for Unix domain socket connections only
+local   all             all                                     scram-sha-256
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            scram-sha-256
+# IPv6 local connections:
+host    all             all             ::1/128                 scram-sha-256
+```    
+
+to
+```
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+# "local" is for Unix domain socket connections only
+local   all             all                                     trust
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            trust
+# IPv6 local connections:
+host    all             all             ::1/128                 trust
+```
+
+
+delete PostgreSQL default user (postgres) password
+
+`echo "ALTER USER username WITH PASSWORD NULL;" | psql -U postgres`
+
+using echo otherwise, we get codepage errors.
+
 
 ### 2. Setup Backend
 ```bash
