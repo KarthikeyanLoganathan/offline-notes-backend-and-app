@@ -73,7 +73,7 @@ cd backend
 npm install
 
 # Create database
-createdb notes_app
+createdb -U postgres notes_app
 
 # Configure environment
 cp .env.example .env

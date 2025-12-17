@@ -6,8 +6,8 @@
 ```bash
 cd backend
 npm install
-dropdb notes_app
-createdb notes_app
+dropdb -U postgres notes_app
+createdb -U postgres notes_app
 cp .env.example .env
 # Edit .env with your settings
 npm run migrate
@@ -22,8 +22,8 @@ npm start            # Start production mode
 ### Database
 ```bash
 # PostgreSQL Commands
-createdb notes_app                    # Create database
-dropdb notes_app                      # Delete database
+createdb -U postgres notes_app                    # Create database
+dropdb -U postgres notes_app                      # Delete database
 psql notes_app                        # Connect to database
 npm run migrate                       # Run migrations
 
@@ -254,8 +254,8 @@ docker logs container-id       # View logs
 cd backend
 rm -rf node_modules package-lock.json
 npm install
-dropdb notes_app
-createdb notes_app
+dropdb -U postgres notes_app
+createdb -U postgres notes_app
 npm run migrate
 npm run dev
 ```
@@ -274,7 +274,7 @@ adb uninstall com.notesapp.offline
 ### Reset Database
 ```bash
 # PostgreSQL
-dropdb notes_app && createdb notes_app && npm run migrate
+dropdb -U postgres notes_app && createdb -U postgres notes_app && npm run migrate
 
 # Android (via adb)
 adb shell

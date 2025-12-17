@@ -9,7 +9,7 @@ brew install postgresql@14
 brew services start postgresql@14
 
 # Create database
-createdb notes_app
+createdb -U postgres notes_app
 ```
 
 ### 2. Setup Backend

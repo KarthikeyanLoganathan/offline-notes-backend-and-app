@@ -6,7 +6,7 @@
 ```bash
 cd backend
 npm install
-createdb notes_app
+createdb -U postgres notes_app
 cp .env.example .env
 # Edit .env with your database credentials
 npm run migrate

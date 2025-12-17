@@ -33,8 +33,8 @@ cp .env.example .env
 
 4. Create the database:
 ```bash
-dropdb notes_app
-createdb notes_app
+dropdb -U postgres notes_app
+createdb -U postgres notes_app
 ```
 
 5. Run migrations:
