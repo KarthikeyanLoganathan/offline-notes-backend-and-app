@@ -3,6 +3,7 @@ import '../models/user.dart';
 import '../services/auth_service.dart';
 import '../database/database_helper.dart';
 import '../database/entities/user_entity.dart';
+import 'package:sqflite/sqflite.dart';
 
 class AuthRepository {
   final AuthService _authService;

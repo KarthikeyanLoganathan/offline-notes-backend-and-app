@@ -7,6 +7,7 @@ import 'providers/sync_provider.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/notes/notes_list_screen.dart';
 import 'services/sync_worker.dart';
+import 'services/utils/service_locator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
