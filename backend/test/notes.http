@@ -1,0 +1,116 @@
+### Notes Endpoints
+
+@baseUrl = http://localhost:3000
+@contentType = application/json
+@labelId = 1
+
+### User Login
+# @name userLogin
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "demo.hemasri+john.doe@gmail.com",
+  "password": "Abcd1234"
+}
+
+### Get all labels
+# @name getAllLabels
+GET {{baseUrl}}/api/labels
+Authorization: Bearer {{userLogin.response.body.token}}
+
+### Create a new note
+POST {{baseUrl}}/api/notes
+# @name createNote
+Authorization: Bearer {{userLogin.response.body.token}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Meeting Notes",
+  "content": "Discussed project requirements and timelines. Key points:\n- Q1 delivery target\n- Need 3 developers\n- Budget approved",
+  "labelIds": []
+}
+
+### Create note with labels
+POST {{baseUrl}}/api/notes
+Authorization: Bearer {{userLogin.response.body.token}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Shopping List",
+  "content": "- Milk\n- Bread\n- Eggs\n- Coffee\n- Fruits",
+  "labelIds": [
+    "{{getAllLabels.response.body.$.0.id}}",
+    "{{getAllLabels.response.body.$.1.id}}"
+  ]
+}
+
+### Create note - minimal
+POST {{baseUrl}}/api/notes
+Authorization: Bearer {{userLogin.response.body.token}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Quick Note",
+  "content": "Remember to call dentist"
+}
+
+### Get all notes (global)
+GET {{baseUrl}}/api/notes
+Authorization: Bearer {{userLogin.response.body.token}}
+
+### Get all notes with pagination
+GET {{baseUrl}}/api/notes?limit=10&offset=0
+Authorization: Bearer {{userLogin.response.body.token}}
+
+### Get single note
+GET {{baseUrl}}/api/notes/{{createNote.request.body.id}}
+Authorization: Bearer {{userLogin.response.body.token}}
+
+### Get notes by label
+GET {{baseUrl}}/api/notes/label/{{getAllLabels.response.body.$.0.id}}
+Authorization: Bearer {{userLogin.response.body.token}}
+
+### Search notes
+GET {{baseUrl}}/api/notes/search?q=meeting
+Authorization: Bearer {{userLogin.response.body.token}}
+
+### Search notes - multiple terms
+GET {{baseUrl}}/api/notes/search?q=project budget
+Authorization: Bearer {{userLogin.response.body.token}}
+
+### Update note
+PUT {{baseUrl}}/api/notes/{{createNote.request.body.id}}
+Authorization: Bearer {{userLogin.response.body.token}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Updated Meeting Notes",
+  "content": "Discussed project requirements and timelines. Key points:\n- Q1 delivery target\n- Need 3 developers\n- Budget approved\n- Updated: Risk assessment completed",
+  "labelIds": ["{{getAllLabels.response.body.$.0.id}}"]
+}
+
+### Update note - partial
+PUT {{baseUrl}}/api/notes/{{createNote.request.body.id}}
+Authorization: Bearer {{userLogin.response.body.token}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Updated Title Only"
+}
+
+### Soft delete note
+DELETE {{baseUrl}}/api/notes/{{createNote.request.body.id}}
+Authorization: Bearer {{userLogin.response.body.token}}
+
+### Restore deleted note
+POST {{baseUrl}}/api/notes/{{createNote.request.body.id}}/restore
+Authorization: Bearer {{userLogin.response.body.token}}
+
+### Permanently delete note
+DELETE {{baseUrl}}/api/notes/{{createNote.request.body.id}}/permanent
+Authorization: Bearer {{userLogin.response.body.token}}
+
+### Get deleted notes
+GET {{baseUrl}}/api/notes?includeDeleted=true
+Authorization: Bearer {{userLogin.response.body.token}}

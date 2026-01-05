@@ -1,0 +1,115 @@
+### Labels Endpoints
+
+@baseUrl = http://localhost:3000
+@contentType = application/json
+@labelId = 529accea-7ca2-4997-bdd9-2076ffc79322
+
+### User Login
+# @name userLogin
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "demo.hemasri+john.doe@gmail.com",
+  "password": "Abcd1234"
+}
+
+### Create a new label
+POST {{baseUrl}}/api/labels
+Authorization: Bearer {{userLogin.response.body.token}}
+Content-Type: {{contentType}}
+
+{
+  "name": "Work",
+  "color": "#FF5733"
+}
+
+### Create another label
+POST {{baseUrl}}/api/labels
+Authorization: Bearer {{userLogin.response.body.token}}
+Content-Type: {{contentType}}
+
+{
+  "name": "Personal",
+  "color": "#33FF57"
+}
+
+### Create label - Shopping
+POST {{baseUrl}}/api/labels
+Authorization: Bearer {{userLogin.response.body.token}}
+Content-Type: {{contentType}}
+
+{
+  "name": "Shopping",
+  "color": "#3357FF"
+}
+
+### Create label - Important
+POST {{baseUrl}}/api/labels
+Authorization: Bearer {{userLogin.response.body.token}}
+Content-Type: {{contentType}}
+
+{
+  "name": "Important",
+  "color": "#FF3333"
+}
+
+### Create label - Ideas
+POST {{baseUrl}}/api/labels
+Authorization: Bearer {{userLogin.response.body.token}}
+Content-Type: {{contentType}}
+
+{
+  "name": "Ideas",
+  "color": "#FFFF33"
+}
+
+### Get all labels
+GET {{baseUrl}}/api/labels
+Authorization: Bearer {{userLogin.response.body.token}}
+
+### Get single label
+GET {{baseUrl}}/api/labels/{{labelId}}
+Authorization: Bearer {{userLogin.response.body.token}}
+
+### Update label
+PUT {{baseUrl}}/api/labels/{{labelId}}
+Authorization: Bearer {{userLogin.response.body.token}}
+Content-Type: {{contentType}}
+
+{
+  "name": "Work Updated",
+  "color": "#FF6347"
+}
+
+### Update label - name only
+PUT {{baseUrl}}/api/labels/{{labelId}}
+Authorization: Bearer {{userLogin.response.body.token}}
+Content-Type: {{contentType}}
+
+{
+  "name": "Professional"
+}
+
+### Update label - color only
+PUT {{baseUrl}}/api/labels/{{labelId}}
+Authorization: Bearer {{userLogin.response.body.token}}
+Content-Type: {{contentType}}
+
+{
+  "color": "#4169E1"
+}
+
+### Delete label
+DELETE {{baseUrl}}/api/labels/{{labelId}}
+Authorization: Bearer {{userLogin.response.body.token}}
+
+### Try to create duplicate label (should fail)
+POST {{baseUrl}}/api/labels
+Authorization: Bearer {{userLogin.response.body.token}}
+Content-Type: {{contentType}}
+
+{
+  "name": "Work",
+  "color": "#FF5733"
+}

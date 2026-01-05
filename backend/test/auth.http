@@ -1,0 +1,67 @@
+### Authentication Endpoints
+
+@baseUrl = http://localhost:3000
+@contentType = application/json
+
+### Variables (Update these after registration/login)
+@verificationCode = your-verification-code-here
+
+### Register new user
+POST {{baseUrl}}/api/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "demo.hemasri+john.doe@gmail.com",
+  "password": "Abcd1234",
+  "addressLine1": "123 Main St",
+  "addressLine2": "Apt 4B",
+  "city": "San Francisco",
+  "state": "CA",
+  "postalCode": "94102",
+  "country": "USA"
+}
+
+### Register another user
+POST {{baseUrl}}/api/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Jane",
+  "lastName": "Smith",
+  "email": "demo.hemasri+jane.smith@gmail.com",
+  "password": "Abcd1234",
+  "addressLine1": "456 Oak Ave",
+  "city": "Los Angeles",
+  "state": "CA",
+  "postalCode": "90001",
+  "country": "USA"
+}
+
+### Verify email (check console logs for verification code)
+GET {{baseUrl}}/api/auth/verify-email?code={{verificationCode}}
+
+### User Login
+# @name userLogin
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "demo.hemasri+john.doe@gmail.com",
+  "password": "Abcd1234"
+}
+
+### Login - Invalid credentials
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "demo.hemasri+john.doe@gmail.com",
+  "password": "WrongPassword"
+}
+
+### Logout
+POST {{baseUrl}}/api/auth/logout
+Authorization: Bearer {{userLogin.response.body.$.token}}
+Content-Type: {{contentType}}

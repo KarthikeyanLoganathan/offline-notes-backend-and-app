@@ -1,0 +1,59 @@
+### User Endpoints
+
+@baseUrl = http://localhost:3000
+@contentType = application/json
+
+### User Login
+# @name userLogin
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "demo.hemasri+john.doe@gmail.com",
+  "password": "Abcd1234"
+}
+
+### Get user profile
+GET {{baseUrl}}/api/users/profile
+Authorization: Bearer {{userLogin.response.body.$.token}}
+
+### Update user profile
+PUT {{baseUrl}}/api/users/profile
+Authorization: Bearer {{userLogin.response.body.$.token}}
+Content-Type: {{contentType}}
+
+{
+  "firstName": "John",
+  "lastName": "Doe Updated",
+  "addressLine1": "123 Main St",
+  "addressLine2": "Apt 4B",
+  "city": "San Francisco",
+  "state": "CA",
+  "postalCode": "94102",
+  "country": "USA"
+}
+
+### Update profile - partial update
+PUT {{baseUrl}}/api/users/profile
+Authorization: Bearer {{userLogin.response.body.$.token}}
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Jonathan"
+}
+
+### Get active sessions
+GET {{baseUrl}}/api/users/sessions
+Authorization: Bearer {{userLogin.response.body.$.token}}
+
+### Get profile without authentication (should fail)
+# But succeeds because of session cookie
+GET {{baseUrl}}/api/users/profile
+
+### Logout
+POST {{baseUrl}}/api/auth/logout
+Authorization: Bearer {{userLogin.response.body.$.token}}
+
+### Logout All Sessions
+POST {{baseUrl}}/api/users/sessions/logout-all
+Authorization: Bearer {{userLogin.response.body.$.token}}

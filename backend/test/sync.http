@@ -1,0 +1,61 @@
+### Sync Endpoints
+
+@baseUrl = http://localhost:3000
+@contentType = application/json
+@labelId = 1
+@timestamp = 2025-12-13T00:00:00.000Z
+
+### User Login
+# @name userLogin
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "demo.hemasri+john.doe@gmail.com",
+  "password": "Abcd1234"
+}
+
+
+### Get global sync metadata
+GET {{baseUrl}}/api/notes/sync/global
+Authorization: Bearer {{userLogin.response.body.token}}
+
+### Get sync metadata for specific label
+GET {{baseUrl}}/api/notes/sync/label/{{labelId}}
+Authorization: Bearer {{userLogin.response.body.token}}
+
+### Get changed notes since timestamp
+GET {{baseUrl}}/api/notes/sync/changes?since={{timestamp}}
+Authorization: Bearer {{userLogin.response.body.token}}
+
+### Get recent changes (last hour)
+GET {{baseUrl}}/api/notes/sync/changes?since=2025-12-13T10:00:00.000Z
+Authorization: Bearer {{userLogin.response.body.token}}
+
+### Get all changes (no timestamp filter)
+GET {{baseUrl}}/api/notes/sync/changes
+Authorization: Bearer {{userLogin.response.body.token}}
+
+### Sync workflow example:
+### 1. Get global sync metadata to check last sync time
+GET {{baseUrl}}/api/notes/sync/global
+Authorization: Bearer {{userLogin.response.body.token}}
+
+### 2. Get changes since last sync
+GET {{baseUrl}}/api/notes/sync/changes?since=2025-12-13T09:00:00.000Z
+Authorization: Bearer {{userLogin.response.body.token}}
+
+### 3. Create/update notes on server (simulate mobile sync)
+POST {{baseUrl}}/api/notes
+Authorization: Bearer {{userLogin.response.body.token}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Synced from Mobile",
+  "content": "This note was created offline and is now being synced",
+  "labelIds": [1]
+}
+
+### 4. Get updated sync metadata
+GET {{baseUrl}}/api/notes/sync/global
+Authorization: Bearer {{userLogin.response.body.token}}
